@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6cc48811971dbab0904bbf2cb5ac46d218ac8343b408031d8d7ab966ccad5b74.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c6f6115a213a8d4aa8d4002e5102a0bf509fe6b1638faa7bdc3b74766fc91f4a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,64 +39,52 @@
         "KinesisFirehoseStack.assets"
       ],
       "metadata": {
-        "/KinesisFirehoseStack/RootStream/Resource": [
+        "/KinesisFirehoseStack/kinesis-bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RootStream89352062"
+            "data": "kinesisbucket14554DA9"
           }
         ],
-        "/KinesisFirehoseStack/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+        "/KinesisFirehoseStack/firehose/Service Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+            "data": "firehoseServiceRoleE01E93F7"
           }
         ],
-        "/KinesisFirehoseStack/RawDataBucket/Resource": [
+        "/KinesisFirehoseStack/firehose/S3 Destination Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RawDataBucket57F26C03"
+            "data": "firehoseS3DestinationRole47347320"
           }
         ],
-        "/KinesisFirehoseStack/RawDataBucket/Policy/Resource": [
+        "/KinesisFirehoseStack/firehose/S3 Destination Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RawDataBucketPolicyAAD9269B"
+            "data": "firehoseS3DestinationRoleDefaultPolicy935071E9"
           }
         ],
-        "/KinesisFirehoseStack/RawDataBucket/AutoDeleteObjectsCustomResource/Default": [
+        "/KinesisFirehoseStack/firehose/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RawDataBucketAutoDeleteObjectsCustomResource1C0E67FF"
+            "data": "firehoseLogGroupE90325F9"
           }
         ],
-        "/KinesisFirehoseStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+        "/KinesisFirehoseStack/firehose/LogGroup/S3Destination/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+            "data": "firehoseLogGroupS3DestinationC8AA3F32"
           }
         ],
-        "/KinesisFirehoseStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+        "/KinesisFirehoseStack/firehose/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+            "data": "firehose8FCE0060"
           }
         ],
-        "/KinesisFirehoseStack/firehoseRole/Resource": [
+        "/KinesisFirehoseStack/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "firehoseRoleE5891AF8"
-          }
-        ],
-        "/KinesisFirehoseStack/firehoseRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "firehoseRoleDefaultPolicy27F13165"
-          }
-        ],
-        "/KinesisFirehoseStack/FirehoseStreamToS3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirehoseStreamToS3"
+            "data": "awscdkawskinesisfirehoseCidrBlocks"
           }
         ],
         "/KinesisFirehoseStack/CDKMetadata/Default": [

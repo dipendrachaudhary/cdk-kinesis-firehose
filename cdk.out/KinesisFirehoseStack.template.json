@@ -1,189 +1,14 @@
 {
  "Resources": {
-  "RootStream89352062": {
-   "Type": "AWS::Kinesis::Stream",
-   "Properties": {
-    "RetentionPeriodHours": 24,
-    "ShardCount": 1,
-    "StreamEncryption": {
-     "Fn::If": [
-      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
-      {
-       "Ref": "AWS::NoValue"
-      },
-      {
-       "EncryptionType": "KMS",
-       "KeyId": "alias/aws/kinesis"
-      }
-     ]
-    },
-    "StreamModeDetails": {
-     "StreamMode": "PROVISIONED"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "KinesisFirehoseStack/RootStream/Resource"
-   }
-  },
-  "RawDataBucket57F26C03": {
+  "kinesisbucket14554DA9": {
    "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
    "Metadata": {
-    "aws:cdk:path": "KinesisFirehoseStack/RawDataBucket/Resource"
+    "aws:cdk:path": "KinesisFirehoseStack/kinesis-bucket/Resource"
    }
   },
-  "RawDataBucketPolicyAAD9269B": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "RawDataBucket57F26C03"
-    },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
-        "s3:List*"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "RawDataBucket57F26C03",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "RawDataBucket57F26C03",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "KinesisFirehoseStack/RawDataBucket/Policy/Resource"
-   }
-  },
-  "RawDataBucketAutoDeleteObjectsCustomResource1C0E67FF": {
-   "Type": "Custom::S3AutoDeleteObjects",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "RawDataBucket57F26C03"
-    }
-   },
-   "DependsOn": [
-    "RawDataBucketPolicyAAD9269B"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "KinesisFirehoseStack/RawDataBucket/AutoDeleteObjectsCustomResource/Default"
-   }
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "KinesisFirehoseStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
-   }
-  },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "483ae06ed27ef8ca76e011264d772420593a6cfe8544759c306ef3b98c9e25be.zip"
-    },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs12.x",
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "Lambda function for auto-deleting objects in ",
-       {
-        "Ref": "RawDataBucket57F26C03"
-       },
-       " S3 bucket."
-      ]
-     ]
-    }
-   },
-   "DependsOn": [
-    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "KinesisFirehoseStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
-    "aws:asset:path": "asset.483ae06ed27ef8ca76e011264d772420593a6cfe8544759c306ef3b98c9e25be",
-    "aws:asset:property": "Code"
-   }
-  },
-  "firehoseRoleE5891AF8": {
+  "firehoseServiceRoleE01E93F7": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -200,36 +25,41 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "KinesisFirehoseStack/firehoseRole/Resource"
+    "aws:cdk:path": "KinesisFirehoseStack/firehose/Service Role/Resource"
    }
   },
-  "firehoseRoleDefaultPolicy27F13165": {
+  "firehoseS3DestinationRole47347320": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "firehose.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "KinesisFirehoseStack/firehose/S3 Destination Role/Resource"
+   }
+  },
+  "firehoseS3DestinationRoleDefaultPolicy935071E9": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
      "Statement": [
       {
        "Action": [
-        "kinesis:DescribeStream",
-        "kinesis:DescribeStreamSummary",
-        "kinesis:GetRecords",
-        "kinesis:GetShardIterator",
-        "kinesis:ListShards",
-        "kinesis:ListStreams",
-        "kinesis:SubscribeToShard"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "RootStream89352062",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": [
         "s3:Abort*",
         "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
         "s3:PutObjectRetention",
@@ -240,7 +70,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "RawDataBucket57F26C03",
+          "kinesisbucket14554DA9",
           "Arn"
          ]
         },
@@ -250,7 +80,7 @@
           [
            {
             "Fn::GetAtt": [
-             "RawDataBucket57F26C03",
+             "kinesisbucket14554DA9",
              "Arn"
             ]
            },
@@ -259,76 +89,97 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "firehoseLogGroupE90325F9",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "firehoseRoleDefaultPolicy27F13165",
+    "PolicyName": "firehoseS3DestinationRoleDefaultPolicy935071E9",
     "Roles": [
      {
-      "Ref": "firehoseRoleE5891AF8"
+      "Ref": "firehoseS3DestinationRole47347320"
      }
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "KinesisFirehoseStack/firehoseRole/DefaultPolicy/Resource"
+    "aws:cdk:path": "KinesisFirehoseStack/firehose/S3 Destination Role/DefaultPolicy/Resource"
    }
   },
-  "FirehoseStreamToS3": {
+  "firehoseLogGroupE90325F9": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "KinesisFirehoseStack/firehose/LogGroup/Resource"
+   }
+  },
+  "firehoseLogGroupS3DestinationC8AA3F32": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "firehoseLogGroupE90325F9"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "KinesisFirehoseStack/firehose/LogGroup/S3Destination/Resource"
+   }
+  },
+  "firehose8FCE0060": {
    "Type": "AWS::KinesisFirehose::DeliveryStream",
    "Properties": {
-    "DeliveryStreamName": "StreamRawToS3",
-    "DeliveryStreamType": "KinesisStreamAsSource",
-    "KinesisStreamSourceConfiguration": {
-     "KinesisStreamARN": {
-      "Fn::GetAtt": [
-       "RootStream89352062",
-       "Arn"
-      ]
-     },
-     "RoleARN": {
-      "Fn::GetAtt": [
-       "firehoseRoleE5891AF8",
-       "Arn"
-      ]
-     }
-    },
-    "S3DestinationConfiguration": {
+    "DeliveryStreamType": "DirectPut",
+    "ExtendedS3DestinationConfiguration": {
      "BucketARN": {
       "Fn::GetAtt": [
-       "RawDataBucket57F26C03",
+       "kinesisbucket14554DA9",
        "Arn"
       ]
      },
-     "BufferingHints": {
-      "IntervalInSeconds": 60,
-      "SizeInMBs": 64
+     "CloudWatchLoggingOptions": {
+      "Enabled": true,
+      "LogGroupName": {
+       "Ref": "firehoseLogGroupE90325F9"
+      },
+      "LogStreamName": {
+       "Ref": "firehoseLogGroupS3DestinationC8AA3F32"
+      }
      },
-     "CompressionFormat": "GZIP",
-     "EncryptionConfiguration": {
-      "NoEncryptionConfig": "NoEncryption"
-     },
-     "Prefix": "raw/",
      "RoleARN": {
       "Fn::GetAtt": [
-       "firehoseRoleE5891AF8",
+       "firehoseS3DestinationRole47347320",
        "Arn"
       ]
      }
     }
    },
    "DependsOn": [
-    "firehoseRoleDefaultPolicy27F13165",
-    "firehoseRoleE5891AF8"
+    "firehoseS3DestinationRoleDefaultPolicy935071E9"
    ],
    "Metadata": {
-    "aws:cdk:path": "KinesisFirehoseStack/FirehoseStreamToS3"
+    "aws:cdk:path": "KinesisFirehoseStack/firehose/Resource"
    }
   },
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WPXQ6CQAyEz+L7UgWM74oHIHgAg0vV8rNNtguGEO4uuKDxaabfNJ00giiG3SZ/SaCLKqjpBsPF5bpSE7oOFRkUkplZzBuV3I13o5IYhlOrK3QzXZyXlGvS/Q/7eVSUNzBkXOMcffS3ue4sjXey+GRBmKIz1tSh7dfmCSVsCnLERiWtOG4yFG6t9oe//i9KLXdUoFVHEXTTjw8yj1EZLhBK2XbhAcI9RJtSiALbGkcNQub1DaKef3smAQAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/11Py27CMBD8ltydJQTEuQKkXlqpgg+oXGcJSxxv5HWokJV/x3m0B04zOzPa2S2h3EAsMv0ruama3NIPxHPQplFJ+o6S3H1vGgzqcHEzGxTpFuKJLY7ihF9syTzGcWaDslwLxA+u3z333ej880TOwaNuF3UeBtWQQyG5kMcrC0Jyj2jpjv7xF0nSp+46cvVUjcK9N9MZB3YVBWI3qCLXtrtqKLK35a/ViC/rl9Brg+MK4Sar+3oH6y2U2U2Ict+7QC3CacYnUaJ0iDcBAAA="
    },
    "Metadata": {
     "aws:cdk:path": "KinesisFirehoseStack/CDKMetadata/Default"
@@ -336,27 +187,86 @@
    "Condition": "CDKMetadataAvailable"
   }
  },
+ "Mappings": {
+  "awscdkawskinesisfirehoseCidrBlocks": {
+   "af-south-1": {
+    "FirehoseCidrBlock": "13.244.121.224/27"
+   },
+   "ap-east-1": {
+    "FirehoseCidrBlock": "18.162.221.32/27"
+   },
+   "ap-northeast-1": {
+    "FirehoseCidrBlock": "13.113.196.224/27"
+   },
+   "ap-northeast-2": {
+    "FirehoseCidrBlock": "13.209.1.64/27"
+   },
+   "ap-northeast-3": {
+    "FirehoseCidrBlock": "13.208.177.192/27"
+   },
+   "ap-south-1": {
+    "FirehoseCidrBlock": "13.232.67.32/27"
+   },
+   "ap-southeast-1": {
+    "FirehoseCidrBlock": "13.228.64.192/27"
+   },
+   "ap-southeast-2": {
+    "FirehoseCidrBlock": "13.210.67.224/27"
+   },
+   "ca-central-1": {
+    "FirehoseCidrBlock": "35.183.92.128/27"
+   },
+   "cn-north-1": {
+    "FirehoseCidrBlock": "52.81.151.32/27"
+   },
+   "cn-northwest-1": {
+    "FirehoseCidrBlock": "161.189.23.64/27"
+   },
+   "eu-central-1": {
+    "FirehoseCidrBlock": "35.158.127.160/27"
+   },
+   "eu-north-1": {
+    "FirehoseCidrBlock": "13.53.63.224/27"
+   },
+   "eu-south-1": {
+    "FirehoseCidrBlock": "15.161.135.128/27"
+   },
+   "eu-west-1": {
+    "FirehoseCidrBlock": "52.19.239.192/27"
+   },
+   "eu-west-2": {
+    "FirehoseCidrBlock": "18.130.1.96/27"
+   },
+   "eu-west-3": {
+    "FirehoseCidrBlock": "35.180.1.96/27"
+   },
+   "me-south-1": {
+    "FirehoseCidrBlock": "15.185.91.0/27"
+   },
+   "sa-east-1": {
+    "FirehoseCidrBlock": "18.228.1.128/27"
+   },
+   "us-east-1": {
+    "FirehoseCidrBlock": "52.70.63.192/27"
+   },
+   "us-east-2": {
+    "FirehoseCidrBlock": "13.58.135.96/27"
+   },
+   "us-gov-east-1": {
+    "FirehoseCidrBlock": "18.253.138.96/27"
+   },
+   "us-gov-west-1": {
+    "FirehoseCidrBlock": "52.61.204.160/27"
+   },
+   "us-west-1": {
+    "FirehoseCidrBlock": "13.57.135.192/27"
+   },
+   "us-west-2": {
+    "FirehoseCidrBlock": "52.89.255.224/27"
+   }
+  }
+ },
  "Conditions": {
-  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
-   "Fn::Or": [
-    {
-     "Fn::Equals": [
-      {
-       "Ref": "AWS::Region"
-      },
-      "cn-north-1"
-     ]
-    },
-    {
-     "Fn::Equals": [
-      {
-       "Ref": "AWS::Region"
-      },
-      "cn-northwest-1"
-     ]
-    }
-   ]
-  },
   "CDKMetadataAvailable": {
    "Fn::Or": [
     {
